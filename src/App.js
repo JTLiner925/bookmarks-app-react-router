@@ -25,6 +25,14 @@ class App extends Component {
       bookmarks: [...this.state.bookmarks, bookmark]
     });
   };
+  deleteBookmark = bookmarkId => {
+    const newBookmarks = this.state.bookmarks.filter(
+      bm => bm.id !== bookmarkId
+    );
+    this.setState({
+      bookmarks: newBookmarks
+    });
+  };
 
   componentDidMount() {
     fetch(config.API_ENDPOINT, {
@@ -47,7 +55,8 @@ class App extends Component {
   render() {
     const contextValue = {
       bookmarks: this.state.bookmarks,
-      addBookmark: this.addBookmark
+      addBookmark: this.addBookmark,
+      deleteBookmark: this.deleteBookmark
     };
     return (
       <main className="App">
@@ -55,15 +64,8 @@ class App extends Component {
         <BookmarksContext.Provider value={contextValue}>
           <Nav />
           <div className="content" aria-live="polite">
-            <Route
-              path="/add-bookmark"
-              component={AddBookmark}
-            />
-            <Route
-              exact
-              path="/"
-              component={BookmarkList}
-            />
+            <Route path="/add-bookmark" component={AddBookmark} />
+            <Route exact path="/" component={BookmarkList} />
           </div>
         </BookmarksContext.Provider>
       </main>
