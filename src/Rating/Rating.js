@@ -37,6 +37,9 @@ Rating.propTypes = {
 
   }
 };
-// Rating.defaultProps = {
-//   value: 1
-// };
+Rating.defaultProps = {
+  value: 1
+};
+Rating.propTypes = {
+  value: PropTypes.number.isRequired
+};
