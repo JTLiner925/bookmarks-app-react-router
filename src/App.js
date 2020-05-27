@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Route } from "react-router-dom";
 import AddBookmark from "./AddBookmark/AddBookmark";
 import BookmarkList from "./BookmarkList/BookmarkList";
+import EditBookmarkForm from './EditBookmark/EditBookmarkForm';
 import BookmarksContext from "./BookmarksContext";
 import Nav from "./Nav/Nav";
 import config from "./config";
@@ -34,30 +35,43 @@ class App extends Component {
       bookmarks: newBookmarks
     });
   };
+  updateBookmark = updatedBookmark => {
+    const newBookmarks = this.state.bookmarks.map(bm => (bm.id === updatedBookmark.id)
+    ? updatedBookmark
+    : bm
+    )
+    this.setState({
+      bookmarks: newBookmarks
+    })
+  };
 
   componentDidMount() {
     fetch(config.API_ENDPOINT, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${config.API_KEY}`
+        'content-type': 'application/json',
+        'Authorization': `Bearer ${config.API_KEY}`
       }
     })
       .then(res => {
         if (!res.ok) {
-          throw new Error(res.status);
+          return res.json().then(error => Promise.reject(error))
         }
-        return res.json();
+        return res.json()
       })
       .then(this.setBookmarks)
-      .catch(error => this.setState({ error }));
+      .catch(error => {
+        console.error(error)
+        this.setState({ error })
+      })
   }
 
   render() {
     const contextValue = {
       bookmarks: this.state.bookmarks,
       addBookmark: this.addBookmark,
-      deleteBookmark: this.deleteBookmark
+      deleteBookmark: this.deleteBookmark,
+      updateBookmark: this.updateBookmark,
     };
     return (
       <main className="App">
@@ -69,6 +83,7 @@ class App extends Component {
           <div className="content" aria-live="polite">
             <Route path="/add-bookmark" component={AddBookmark} />
             <Route exact path="/" component={BookmarkList} />
+            <Route path='/edit/:bookmarkId' component={EditBookmarkForm} />
           </div>
         </BookmarksContext.Provider>
       </main>
